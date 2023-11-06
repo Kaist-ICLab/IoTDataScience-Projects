@@ -1,0 +1,7 @@
+{
+  "name": "Pet Data Collector",
+
+  "short_name": "PDC",
+  "orientation": "portrait",
+  "display": "fullscreen"
+}

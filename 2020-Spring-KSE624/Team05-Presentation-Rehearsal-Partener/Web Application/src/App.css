@@ -1,0 +1,17 @@
+/* CSS for App.js */
+
+@import '~antd/dist/antd.css';
+
+.site-layout-content {
+  background: #fff;
+  padding: 24px;
+  min-height: 500px;
+}
+
+.ant-modal-confirm-body > .anticon + .ant-modal-confirm-title + .ant-modal-confirm-content {
+  margin-left: 0;
+}
+
+.ant-divider-horizontal.ant-divider-with-text {
+  font-size: 14px;
+}

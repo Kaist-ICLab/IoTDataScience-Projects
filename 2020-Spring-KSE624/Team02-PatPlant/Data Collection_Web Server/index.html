@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name=”apple-mobile-web-app-capable” content=”yes”>
+    <meta name="theme-color" content="#fff5d7">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Pet Data Collector</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="css\ui.css">
+    <link rel="stylesheet" href="css\button.css">
+    <link rel="manifest" href="./manifest.json" />
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js"></script>
+
+</head>
+<body>
+
+  <div class="background">
+    <div class="titlebox">
+      <div id="main">
+        Pet Data Collector
+      </div>
+      <div id="sub">
+        Touch to label data
+      </div>
+    </div>
+
+    <div id="container">
+      <div id="button">
+        <label class="switch">
+            <input type="checkbox" id="switch1" value="OFF">
+            <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="item" id="i1">
+      <div class="sensor">
+        Tail
+      </div>
+      <div class="label">
+        <div class="labelOptT" id="opt11" value="FALSE">
+
+        </div>
+        <div class="labelOptT" id="opt12" value="FALSE">
+
+        </div>
+        <div class="labelOptT" id="opt13" value="FALSE">
+
+        </div>
+      </div>
+    </div>
+
+    <div class="item" id="i2">
+      <div class="sensor">
+        Barking
+      </div>
+      <div class="label">
+        <div class="labelOptB" id="opt21" value="FALSE">
+
+        </div>
+        <div class="labelOptB" id="opt22" value="FALSE">
+
+        </div>
+      </div>
+    </div>
+
+    <div class="foot" id="saveT">
+      Save scv file: T
+    </div>
+
+    <div class="foot" id="saveB">
+      Save scv file: B
+    </div>
+  </div>
+
+
+
+
+    <script>
+        var server_socket = io.connect('143.248.250.70');
+
+        var data_to_arduino_gyro = {};
+        var data_to_arduino_sound = {};
+        //data_to_arduino.collect = false;
+        data_to_arduino_gyro.type = 'none';
+        data_to_arduino_gyro.state = 'none';
+        data_to_arduino_sound.type = 'none';
+        data_to_arduino_sound.state = 'none';
+
+        $("#opt11").click(function() {
+          if($(this).val() == "FALSE") {
+            $(this).css('background-color', '#FA3D67');
+            $(this).val("TRUE");
+            data_to_arduino_gyro.type = 'tail';
+            data_to_arduino_gyro.state = 0;
+          } else {
+            $(this).css('background-color', '#feb300');
+            $(this).val("FALSE");
+            data_to_arduino_gyro.type = 'none';
+            data_to_arduino_gyro.state = 'none';
+          }
+        })
+
+        $("#opt12").click(function() {
+          if($(this).val() == "FALSE") {
+            $(this).css('background-color', '#FA3D67');
+            $(this).val("TRUE");
+            data_to_arduino_gyro.type = 'tail';
+            data_to_arduino_gyro.state = 1;
+          } else {
+            $(this).css('background-color', '#feb300');
+            $(this).val("FALSE");
+            data_to_arduino_gyro.type = 'none';
+            data_to_arduino_gyro.state = 'none';
+          }
+        })
+
+        $("#opt13").click(function() {
+          if($(this).val() == "FALSE") {
+            $(this).css('background-color', '#FA3D67');
+            $(this).val("TRUE");
+            data_to_arduino_gyro.type = 'tail';
+            data_to_arduino_gyro.state = 2;
+          } else {
+            $(this).css('background-color', '#feb300');
+            $(this).val("FALSE");
+            data_to_arduino_gyro.type = 'none';
+            data_to_arduino_gyro.state = 'none';
+          }
+        })
+
+        $("#opt21").click(function() {
+          if($(this).val() == "FALSE") {
+            $(this).css('background-color', '#FA3D67');
+            $(this).val("TRUE");
+            data_to_arduino_sound.type = 'bark';
+            data_to_arduino_sound.state = 0;
+          } else {
+            $(this).css('background-color', '#feb300');
+            $(this).val("FALSE");
+            data_to_arduino_sound.type = 'none';
+            data_to_arduino_sound.state = 'none';
+          }
+        })
+
+        $("#opt22").click(function() {
+          if($(this).val() == "FALSE") {
+            $(this).css('background-color', '#FA3D67');
+            $(this).val("TRUE");
+            data_to_arduino_sound.type = 'bark';
+            data_to_arduino_sound.state = 1;
+          } else {
+            $(this).css('background-color', '#feb300');
+            $(this).val("FALSE");
+            data_to_arduino_sound.type = 'none';
+            data_to_arduino_sound.state = 'none';
+          }
+        })
+
+        var check = $("switch1");
+        check.click(function(){
+          $("p").toggle();
+        });
+
+        $("#switch1").click(function(){
+            if($(this).val() == "OFF"){
+                $(this).val("ON");
+                console.log('on');
+            } else{
+                $(this).val("OFF");
+                console.log('off');
+            }
+        })
+
+        $("#saveT").click(function(){
+          server_socket.emit('saveReqT', 1);
+        });
+
+        $("#saveB").click(function(){
+          server_socket.emit('saveReqB', 1);
+        });
+
+        server_socket.on('towebT', function(data){
+          data_to_arduino_gyro.timeStamp = data.timeStamp;
+          data_to_arduino_gyro.acX = data.acX;
+          data_to_arduino_gyro.acY = data.acY;
+          data_to_arduino_gyro.acZ = data.acZ;
+          data_to_arduino_gyro.gyX = data.gyX;
+          data_to_arduino_gyro.gyY =  data.gyY;
+          data_to_arduino_gyro.gyZ = data.gyZ;
+
+          if($("#switch1").val() == "ON" && data_to_arduino_gyro.type != 'none') {
+            server_socket.emit('fromwebT', data_to_arduino_gyro);
+          }
+        });
+
+        server_socket.on('towebB', function(data){
+          data_to_arduino_sound.timeStamp = data.timeStamp;
+          data_to_arduino_sound.sound = data.sound;
+
+          if($("#switch1").val() == "ON" && data_to_arduino_sound.type != 'none') {
+            server_socket.emit('fromwebB', data_to_arduino_sound);
+          }
+        })
+    </script>
+</body>
+</html>
